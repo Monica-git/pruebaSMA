@@ -33,7 +33,22 @@ const UsuarioSchema = Schema({
         required: true,
         default: 'ROL_ALUMNO'
     },
+    grupo: {
+        type: Schema.Types.ObjectId,
+        ref: 'Grupo'
+    },
 
 }, { collection: 'Usuarios' });
+
+// introducimos una modificacion del metodo toJson() para no enviar toda la información de la BD
+
+UsuarioSchema.method('toJSON', function() {
+
+    const { __v, _id, password, ...object } = this.toObject();
+
+    object.uid = _id;
+    return object;
+
+});
 
 module.exports = model('Usuario', UsuarioSchema);

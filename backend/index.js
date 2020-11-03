@@ -26,7 +26,10 @@ req.params
 req.query
 */
 
-app.use('/api/usuarios', require('./routers/usuarios.routes'));
+app.use('/api/usuarios', require('./routes/usuarios.routes'));
+app.use('/api/login', require('./routes/auth.routes'));
+app.use('/api/grupos', require('./routes/grupos.routes'));
+
 
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en el puerto ' + process.env.PORT);
