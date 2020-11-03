@@ -11,14 +11,6 @@ const obtenerUsuarios = async(req, res) => {
     //encontrar un unico usuario
     const id = req.query.id;
 
-    if (id == undefined) {
-        return res.status(400).json({
-            ok: false,
-            msg: 'Como que undefined',
-            id
-        });
-    }
-
     // paginacion
     // Number: tipar como numero (por si envian cosas raras)
     let desde = Number(req.query.desde) || 0;
