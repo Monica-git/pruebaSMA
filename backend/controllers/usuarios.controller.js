@@ -16,19 +16,13 @@ const obtenerUsuarios = async(req, res) => {
     let desde = Number(req.query.desde) || 0;
     if (desde < 0)
         desde = 0;
-    const registropp = 10;
+    const registropp = process.env.DOCSPERPAGES;
 
     try {
 
         let usuarios, total;
 
         if (id) {
-            if (!validator.isMongoId(id)) {
-                return res.status(400).json({
-                    ok: false,
-                    msg: 'Controller: El id de usuario debe ser valido'
-                });
-            }
 
             // promesa para que se ejecuten las dos llamadas a la vez, cuando las dos acaben se sale de la promesa
             [usuarios, total] = await Promise.all([
@@ -76,7 +70,7 @@ const obtenerUsuarios = async(req, res) => {
 
 const crearUsuario = async(req, res) => {
 
-    const { email, password, rol } = req.body;
+    const { email, password } = req.body;
 
     try {
 
@@ -88,12 +82,6 @@ const crearUsuario = async(req, res) => {
                 msg: 'Email ya existe'
             });
         }
-        if (rol && rol != 'ROL_ALUMNO' && rol != 'ROL_PROFESOR' && rol != 'ROL_ADMIN') {
-            return res.status(400).json({
-                ok: false,
-                msg: 'ROL incorrecto'
-            });
-        }
 
         // generar cadena aleatoria para el cifrado
         const salt = bcrypt.genSaltSync();
@@ -103,8 +91,10 @@ const crearUsuario = async(req, res) => {
         /* --------------------------------------------------------
             almacenar los datos en la BD */
 
+        // extraer la variable alta
+        const { alta, ...object } = req.body;
         // crear objeto
-        const usuario = new Usuario(req.body);
+        const usuario = new Usuario(object);
         usuario.password = cpassword;
 
         // almacenarlo en la BD
@@ -131,11 +121,11 @@ const actualizarUsuario = async(req, res = response) => {
 
     // aunque venga el password aqui no se va a cambiar
     // si cambia el email, hay que comprobar que no exista en la BD
-    const { password, email, ...object } = req.body;
+    const { password, alta, email, ...object } = req.body;
     const uid = req.params.id;
 
     try {
-        // comprobar que no exista el email
+        // comprobar si existe o no existe el usuario
         const existeEmail = await Usuario.findOne({ email: email });
 
         if (existeEmail) {
@@ -172,7 +162,7 @@ const actualizarUsuario = async(req, res = response) => {
 
 }
 
-const borrarUsuario = async(req, res) => {
+const borrarUsuario = async(req, res = response) => {
 
     const uid = req.params.id;
 
@@ -184,7 +174,7 @@ const borrarUsuario = async(req, res) => {
         if (!existeUsuario) {
             return res.status(400).json({
                 ok: false,
-                msg: "El usaurio no existe"
+                msg: "El usuario no existe"
             });
         }
 

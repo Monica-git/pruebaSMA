@@ -37,6 +37,14 @@ const UsuarioSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Grupo'
     },
+    alta: {
+        type: Date,
+        default: Date.now
+    },
+    activo: {
+        type: Boolean,
+        default: true
+    }
 
 }, { collection: 'Usuarios' });
 

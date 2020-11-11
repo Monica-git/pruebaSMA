@@ -10,18 +10,34 @@ const { validarJWT } = require('../middleware/validar-jwt');
 
 const router = Router();
 
-router.get('/', validarJWT, obtenerGrupos);
+router.get('/', [
+    validarJWT,
+    check('id', 'El identificador no es válido').optional().isMongoId(),
+    check('desde', 'El desde debe ser un número').optional().isNumeric(),
+    validarCampos,
+
+], obtenerGrupos);
 
 router.post('/', [
     validarJWT,
-    check('nombre', 'El argumento nombre es obligatorio').not().isEmpty(),
+    check('nombre', 'El argumento nombre es obligatorio').not().isEmpty().trim(),
+    check('curso', 'El argumento curso no es valido').isMongoId(),
+
+    check('alumnos.*.usuario', 'El identificador de alumno no es valido').optional.isMongoId(),
+    check('proyecto').optional().trim(),
+    check('proyectodes').optional().trim(),
     validarCampos,
 ], crearGrupo);
 
 router.put('/:id', [
     validarJWT,
-    check('nombre', 'El argumento nombre es obligatorio').not().isEmpty(),
     check('id', 'El identificador no es válido').isMongoId(),
+    check('nombre', 'El argumento nombre es obligatorio').not().isEmpty().trim(),
+    check('curso', 'El argumento curso no es valido').isMongoId(),
+
+    check('alumnos.*.usuario', 'El identificador de alumno no es valido').optional.isMongoId(),
+    check('proyecto').optional().trim(),
+    check('proyectodes').optional().trim(),
     validarCampos,
 ], actualizarGrupo);
 
