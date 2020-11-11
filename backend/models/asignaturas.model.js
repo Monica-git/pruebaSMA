@@ -1,37 +1,33 @@
 const { Schema, model } = require('mongoose');
 
-const GrupoSchema = Schema({
+const AsignaturaSchema = Schema({
 
     nombre: {
         type: String,
         require: true
     },
-    proyecto: {
-        type: String
-    },
-    proyectodes: {
-        type: String
+    nombrecorto: {
+        type: String,
+        require: true
     },
     curso: {
         type: Schema.Types.ObjectId,
-        ref: Curso,
+        ref: 'Curso',
         require: true
     },
-    alumnos: [{
+    profesores: [{
         usuario: {
             type: Schema.Types.ObjectId,
-            ref: 'Usuario',
-            require: true
+            ref: 'Usuario'
         }
     }]
+}, { collection: 'asignaturas' });
 
-
-}, { collection: 'grupos' });
-
-GrupoSchema.method('toJSON', function() {
+AsignaturaSchema.method('toJSON', function() {
     const { __v, _id, ...object } = this.toObject();
+
     object.uid = _id;
     return object;
-});
+})
 
-module.exports = model('Grupo', GrupoSchema);
+module.exports = model('Asignatura', AsignaturaSchema);
